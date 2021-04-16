@@ -317,7 +317,6 @@ if __name__ == '__main__':
     User: (name  ="Fred", desc   = "Some really awful \\"youtuber\\" who was popular a long time ago", age = -5)
     User: (age=0, name="?", desc="Wait, who is this?")
     User: (desc="One more just as POC that any order is fine.", name="Barsonald", age=9999)'''
-    print((usersRaw,))
 
     def fieldParser(name, valueParser):
         return Combinators.chain(
