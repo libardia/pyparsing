@@ -342,7 +342,7 @@ if __name__ == '__main__':
     User: (age=0, name="?", desc="Wait, who is this?")
     User: (desc="One more just as POC that any order is fine.", name="Barsonald", age=9999)'''
 
-    def fieldParser(name, valueParser):
+    def makeFieldParser(name, valueParser):
         return Combinators.chain(
             PrebuiltParsers.prefix(name),
             PrebuiltParsers.isw(PrimitiveParsers.char('=')),
@@ -353,9 +353,9 @@ if __name__ == '__main__':
 
     anyFieldParser = PrebuiltParsers.isw(Combinators.chain(
         Combinators.choice(
-            fieldParser('name', PrebuiltParsers.quotedString),
-            fieldParser('age', PrebuiltParsers.integer),
-            fieldParser('desc', PrebuiltParsers.quotedString)
+            makeFieldParser('name', PrebuiltParsers.quotedString),
+            makeFieldParser('age', PrebuiltParsers.integer),
+            makeFieldParser('desc', PrebuiltParsers.quotedString)
         ),
         PrebuiltParsers.allWhitespace,
         Combinators.maybe(PrimitiveParsers.char(',')),
@@ -383,5 +383,3 @@ if __name__ == '__main__':
         print('  Name:', u['name'])
         print('  Age: ', u['age'])
         print('  Desc:', u['desc'])
-
-    apply('\'single \\\'quoted\\\' string\' test', PrebuiltParsers.singleQuotedString)
