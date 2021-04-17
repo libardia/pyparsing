@@ -220,7 +220,7 @@ class PrebuiltParsers:
     
     def quotedString(string):
         """Parser: takes a string as an input and returns either ``None`` if the parser failed, or a tuple of the parsed output and the remaining unconsumed input.\n
-        Consumes all input until a newline character. This parser is composed as follows::
+        Consumes all input within two double quotes, ignoring escaped quotes. This parser is composed as follows::
             Combinators.chain(
                 PrimitiveParsers.char('"'),
                 Combinators.manyOrNone(Combinators.choice(
@@ -240,6 +240,30 @@ class PrebuiltParsers:
             PrimitiveParsers.char('"'),
 
             proc=lambda rs: rs[1].replace('\\"', '"')
+        )(string)
+    
+    def singleQuotedString(string):
+        """Parser: takes a string as an input and returns either ``None`` if the parser failed, or a tuple of the parsed output and the remaining unconsumed input.\n
+        Consumes all input within two single quotes, ignoring escaped quotes. This parser is composed as follows::
+            Combinators.chain(
+                PrimitiveParsers.char('\\\''),
+                Combinators.manyOrNone(Combinators.choice(
+                    PrebuiltParsers.prefix('\\\\\\\''),
+                    PrimitiveParsers.notChar('\\\'')
+                )),
+                PrimitiveParsers.char('\\\''),
+
+                proc=lambda rs: rs[1].replace('\\\\\\\', '\\\'')
+            )"""
+        return Combinators.chain(
+            PrimitiveParsers.char('\''),
+            Combinators.manyOrNone(Combinators.choice(
+                PrebuiltParsers.prefix('\\\''),
+                PrimitiveParsers.notChar('\'')
+            )),
+            PrimitiveParsers.char('\''),
+
+            proc=lambda rs: rs[1].replace('\\\'', '\'')
         )(string)
 
     def isw(parser):
@@ -359,3 +383,5 @@ if __name__ == '__main__':
         print('  Name:', u['name'])
         print('  Age: ', u['age'])
         print('  Desc:', u['desc'])
+
+    apply('\'single \\\'quoted\\\' string\' test', PrebuiltParsers.singleQuotedString)
