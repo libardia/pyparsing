@@ -332,6 +332,18 @@ class PrebuiltParsers:
 
             proc = lambda rs: int(''.join(rs))
         )(string)
+    
+    def decmial(string):
+        return Combinators.chain(
+            Combinators.maybe(PrimitiveParsers.char('-')),
+            Combinators.many(PrimitiveParsers.digit),
+            Combinators.maybe(Combinators.chain(
+                PrimitiveParsers.char('.'),
+                Combinators.many(PrimitiveParsers.digit)
+            )),
+
+            proc = lambda rs: float(''.join(rs))
+        )(string)
 
 if __name__ == '__main__':
     def apply(input, parser):
