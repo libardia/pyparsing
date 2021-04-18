@@ -334,6 +334,18 @@ class PrebuiltParsers:
         )(string)
     
     def decmial(string):
+        """Parser: takes a string as an input and returns either ``None`` if the parser failed, or a tuple of the parsed output and the remaining unconsumed input.\n
+        Parses a decimal number (float). This parser is composed as follows::
+            Combinators.chain(
+                Combinators.maybe(PrimitiveParsers.char('-')),
+                Combinators.many(PrimitiveParsers.digit),
+                Combinators.maybe(Combinators.chain(
+                    PrimitiveParsers.char('.'),
+                    Combinators.many(PrimitiveParsers.digit)
+                )),
+
+                proc = lambda rs: float(''.join(rs))
+            )"""
         return Combinators.chain(
             Combinators.maybe(PrimitiveParsers.char('-')),
             Combinators.many(PrimitiveParsers.digit),
