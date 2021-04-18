@@ -192,14 +192,14 @@ class Combinators:
                 return result
         return fromWhole
     
-    def concludeParser(parser):
+    def conclude(parser):
         """Parser generator: returns parser as a function: ``func(string) -> tuple(result, rest) or None``\n
         Returns a parser that, uniquely, only returns the result and not the unconsumed input. Used for finishing a large, complex parser, so the end user only recieves the parsed object."""
-        def fromConcludeParser(string):
+        def fromConclude(string):
             pr = parser(string)
             if pr is not None:
                 return pr[0]
-        return fromConcludeParser
+        return fromConclude
 
 # Premade useful parsers
 
@@ -387,7 +387,7 @@ if __name__ == '__main__':
         proc=ResultProcessors.take(0)
     ))
     
-    userParser = Combinators.concludeParser(Combinators.many(
+    userParser = Combinators.conclude(Combinators.many(
         Combinators.chain(
             PrebuiltParsers.prefix('User: ('),
             Combinators.many(anyFieldParser, proc=ResultProcessors.doNothing),
