@@ -1,3 +1,5 @@
+import re
+
 # Result processing functions =====================================================================
 
 class ResultProcessors:
@@ -89,6 +91,16 @@ class PrimitiveParsers:
                 return string[:n], string[n:]
         return fromTake
 
+    def reg(pattern):
+        """Parser generator: returns parser as a function: ``func(string) -> tuple(result, rest) or None``\n
+        Returns a parser that that will parse and return the match from the given regex expression. It will always consume and return all
+        characters involved in the match. It's hard to justify this as a \"primitive\" parser, but it's harder to justify it as a
+        \"prebuilt\" one."""
+        def fromReg(string):
+            m = re.match(pattern, string)
+            if m is not None:
+                return string[m.start():m.end()], string[m.end():]
+        return fromReg
 
 # Combinators
 
@@ -169,8 +181,8 @@ class Combinators:
 
     def after(parser, proc):
         """Parser generator: returns parser as a function: ``func(string) -> tuple(result, rest) or None``\n
-        Returns a parser that runs a parser, and then runs the given result processor on the result. If either the input parser or the processor
-        fail, this parser fails."""
+        Returns a parser that runs a parser, and then runs the given result processor on the result. (NOTE: passed into the processor will
+        be a single object, not a list.) If either the input parser or the processor fail, this parser fails."""
         def fromAfter(string):
             pr = parser(string)
             if pr is not None:
@@ -407,3 +419,8 @@ if __name__ == '__main__':
         print('  Name:', u['name'])
         print('  Age: ', u['age'])
         print('  Desc:', u['desc'])
+
+    f = PrimitiveParsers.reg(r'[+-]?\d+(\.\d+)?')
+    p = Combinators.after(f, lambda r: float(r))
+    s = '-54.32 and a bit'
+    print(f'\'{s}\' -> {p(s)}')
