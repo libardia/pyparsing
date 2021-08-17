@@ -138,6 +138,12 @@ class Combinators:
         return Combinators.after(fromChain, proc)
 
     @staticmethod
+    def chainIsw(*parsers, proc=ResultProcessors.concat):
+        """Parser generator: returns parser as a function: ``func(string) -> tuple(result, rest) or None``\n
+        Identical to ``chain()``, but wraps every parser with ``isw`` (ignore surrounding whitespace)."""
+        return Combinators.chain((PrebuiltParsers.isw(p) for p in parsers), proc)
+
+    @staticmethod
     def many(parser, proc=ResultProcessors.concat):
         """Parser generator: returns parser as a function: ``func(string) -> tuple(result, rest) or None``\n
         Returns a parser that runs the same parser over and over until it fails, and returns all results. Fails if it can't parse at
@@ -454,4 +460,18 @@ if __name__ == '__main__':
     f = PrimitiveParsers.reg(r'[+-]?\d+(\.\d+)?')
     p = Combinators.after(f, lambda r: float(r))
     s = '-54.32 and a bit'
-    print(f'\'{s}\' -> {p(s)}')
+    apply(s, p)
+
+    def recParser(string):
+        return Combinators.chain(
+            PrimitiveParsers.char('['),
+            Combinators.many(Combinators.choice(
+                Combinators.many(PrimitiveParsers.letter),
+                recParser
+            ), proc=lambda rs: list(rs)),
+            PrimitiveParsers.char(']'),
+
+            proc=lambda rs: rs[1]
+        )(string)
+
+    apply('[outer[innerA[innerB]innerA]outer]', Combinators.conclude(recParser))
