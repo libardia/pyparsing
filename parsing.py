@@ -262,8 +262,7 @@ class PrebuiltParsers:
     @staticmethod
     def restOfLineTrim(string):
         """Parser: takes a string as an input and returns either ``None`` if the parser failed, or a tuple of the parsed output and the remaining unconsumed input.\n
-        Consumes all input until but not including a newline character, or EOF. If there is a newline rather than EOF, that newline is ignored.\n
-        This parser is composed as follows::
+        Consumes all input until a newline character, or EOF. If there is a newline rather than EOF, that newline is ignored. This parser is composed as follows::
             Combinators.chain(
                 Combinators.manyOrNone(PrimitiveParsers.notChar('\\n')),
                 Combinators.ignore(PrimitiveParsers.char('\\n'))
